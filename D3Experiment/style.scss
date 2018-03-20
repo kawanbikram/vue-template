@@ -1,0 +1,16 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    height: 70%;
+    .node circle {
+      stroke: #3a403d;
+      stroke-width: .5px;
+    }
+  }
+}

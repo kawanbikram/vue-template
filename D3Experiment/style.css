@@ -1,0 +1,15 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center; }
+  body .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    height: 70%; }
+    body .container .node circle {
+      stroke: #3a403d;
+      stroke-width: .5px; }
+
+/*# sourceMappingURL=style.css.map */
