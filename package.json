@@ -9,6 +9,7 @@
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
+    "d3": "^4.13.0",
     "es6-promise": "^4.1.1",
     "prettier": "^1.11.1",
     "vue": "^2.3.3",

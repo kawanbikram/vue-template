@@ -54,7 +54,7 @@ export default {
 
 #wrapper {
   display: flex;
-  max-width: 1200px;
+    height: 85vh;
 }
 
 </style>
