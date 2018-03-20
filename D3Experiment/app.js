@@ -1,5 +1,5 @@
 const width = document.querySelector('.container').clientWidth;
-const height = document.querySelector('.container').clientHeight;
+const height =document.querySelector('.container').clientHeight;
 const sizeDivisor = 100, nodePadding = 2.5;
 const svg = d3.select(".container")
     .append("svg")
@@ -9,10 +9,11 @@ const svg = d3.select(".container")
 const color = d3.scaleOrdinal(["#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854", "#ffd92f", "#e5c494", "#b3b3b3"]);
 
 const simulation = d3.forceSimulation()
-    .force("forceX", d3.forceX().strength(.1).x(width * .5))
-    .force("forceY", d3.forceY().strength(.1).y(height * .5))
+    .force("forceX", d3.forceX().strength(.1).x(width))
+    .force("forceY", d3.forceY().strength(.1).y(height))
     .force("center", d3.forceCenter().x(width * .5).y(height * .5))
-    .force("charge", d3.forceManyBody().strength(-205));
+    .force("charge", d3.forceManyBody().strength(-200))
+
 
 d3.csv("data.csv", (error, rawData) => {
     if (error) throw error;
@@ -21,31 +22,28 @@ d3.csv("data.csv", (error, rawData) => {
         country: d.country,
         gdp: parseFloat(d.gdp),
         continent: d.continent
-    })).filter(d => d.gdp >0 && d.gdp >100 )
+    })).filter(d => d.gdp > 0 && d.gdp > 100)
         .sort((a, b) => b.gdp - a.gdp)
     // sort the nodes so that the bigger ones are at the back
 
 
+    const scaleRadius = d3.scaleLinear().domain(d3.extent(data, d => d.gdp)).range([10, 30])
 
+        //update the simulation based on the data
+    simulation
+        .nodes(data)
+        .force("collide", d3.forceCollide()
+            .strength(.2)
+            .radius(d => scaleRadius(d.gdp) + nodePadding)
+            .iterations(1))
+        .on("tick", d => {
 
-const scaleRadius = d3.scaleLinear().domain(d3.extent(data,d=>d.gdp)).range([20,50])
-
-    console.log(data)
-
-    //update the simulation based on the data
-    setInterval(() => {
-        simulation
-            .nodes(data)
-            .force("collide", d3.forceCollide()
-                .strength(.2)
-                .radius(d => scaleRadius(d.gdp) + nodePadding)
-                .iterations(1))
-            .on("tick", d => {
-                node
-                    .attr("cx", d => d.x)
-                    .attr("cy", d => d.y)
-            });
-    }, 200)
+            // bounded box calculation from https://bl.ocks.org/mbostock/1129492
+            node
+                .attr("cx", (d) => Math.max(scaleRadius(d.gdp), Math.min(width - scaleRadius(d.gdp), d.x))
+                )
+                .attr("cy", d => Math.max(scaleRadius(d.gdp), Math.min(height - scaleRadius(d.gdp), d.y)))
+        });
 
     const node = svg.append("g")
         .attr("class", "node")
@@ -54,7 +52,9 @@ const scaleRadius = d3.scaleLinear().domain(d3.extent(data,d=>d.gdp)).range([20,
         .enter().append("circle")
         .attr("r", d => scaleRadius(d.gdp))
         .attr("fill", d => color(d.continent))
-        .attr("cx", d => d.x)
+        .attr("cx", (d) => {
+            return d.x
+        })
         .attr("cy", d => d.y)
         .call(d3.drag()
             .on("start", dragstarted)
