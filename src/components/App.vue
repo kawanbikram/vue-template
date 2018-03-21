@@ -26,11 +26,14 @@
 import Navigation from './Navigation.vue';
 import Footer from './Footer.vue';
 
+
+
 export default {
   name: 'app',
   components: {
     navigation: Navigation,
     pageFooter: Footer,
+
   },
   mounted() {
     this.$store.dispatch('getCount')

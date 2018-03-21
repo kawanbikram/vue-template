@@ -5,7 +5,7 @@
 <template lang="pug">
 
 #footer
-  p Footer
+  p Footerddddddd
 
 </template>
 
