@@ -1,5 +1,5 @@
-const width = 400;//document.querySelector('.container').clientWidth;
-const height = 400;//document.querySelector('.container').clientHeight;
+const width = 800;//document.querySelector('.container').clientWidth;
+const height = 800;//document.querySelector('.container').clientHeight;
 const sizeDivisor = 100, nodePadding = 2.5;
 const svg = d3.select(".container")
     .append("svg")
@@ -8,7 +8,7 @@ const svg = d3.select(".container")
 
 const color = d3.scaleOrdinal(["#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854", "#ffd92f", "#e5c494", "#b3b3b3"]);
 const DELAY = 100;
-const radiusDimension = [10, 30]
+const radiusDimension = [10, 50]
 const RADIUS_OFFSET = 5;
 const simulation = d3.forceSimulation()
     .force("forceX", d3.forceX().strength(.1).x(width))
@@ -74,7 +74,7 @@ d3.csv("data.csv", (error, rawData) => {
             })
 
             simulation
-                .radius(d => d.radius + nodePadding)
+                .nodes(simulateData)
                 .on("tick", (d, i) => {
                     // bounded box calculation from https://bl.ocks.org/mbostock/1129492
                     node
