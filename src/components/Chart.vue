@@ -22,33 +22,29 @@
         props: ['className'],
         mounted: function () {
             const width = 400;//document.querySelector('.container').clientWidth;
-            const height = 300;//document.querySelector('.container').clientHeight;
+            const height = 400;//document.querySelector('.container').clientHeight;
 
             const svg = d3.select(`.${this.className}`)
                 .append("svg")
                 .attr("width", width)
                 .attr("height", height);
-
-            console.log(this.className,'prop')
             const color = d3.scaleOrdinal(["#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854", "#ffd92f", "#e5c494", "#b3b3b3"]);
             const DELAY = 100;
-            const radiusDimension = [10, 30]
+            const radiusDimension = [5, 40]
             const RADIUS_OFFSET = 5;
             const simulation = d3.forceSimulation()
                 .force("forceX", d3.forceX().strength(.1).x(width))
                 .force("forceY", d3.forceY().strength(.1).y(height))
                 .force("center", d3.forceCenter().x(width * .5).y(height * .5))
-                .force("charge", d3.forceManyBody().strength(-200))
+                .force("charge", d3.forceManyBody().strength(-150))
 
             let firstSimulate = true;
-            // d3.csv("data.csv", (error, rawData) => {
-            //     if (error) throw error;
-
-
             console.log(rawData, 'data')
-            const scaleRadius = d3.scaleLinear().domain(d3.extent(rawData, d => d.gdp)).range(radiusDimension)
+            const scaleRadius = d3.scaleLinear()
+                .domain(d3.extent(rawData, d => d.gdp))
+                .range(radiusDimension)
 
-            const data = rawData.map(d => ({
+            let data = rawData.map(d => ({
                 country: d.country,
                 gdp: parseFloat(d.gdp),
                 radius: scaleRadius(parseFloat(d.gdp)),
@@ -57,6 +53,13 @@
                 .filter(d => d.radius > 0 && d.radius < 20)
                 .slice(1, 20)
                 .sort((a, b) => b.radius - a.radius)
+
+            const scaleR = d3.scaleLinear()
+                .domain(d3.extent(data, d => d.gdp))
+                .range(radiusDimension)
+
+            data = data.map((d, i) => ({...d, i, r: scaleR(d.gdp), radius: scaleR((d.gdp))}))
+
             // sort the nodes so that the bigger ones are at the back
             let node;
             let simulateData = data.slice();
@@ -81,7 +84,7 @@
                     node = svg.append("g")
                         .attr("class", "node")
                         .selectAll("circle")
-                        .data(simulateData, d => d)
+                        .data(simulateData)
                         .enter()
                         .append("circle")
                         .attr("fill", d => color(d.continent))
@@ -92,9 +95,9 @@
 
                 } else {
 
-                    simulateData.forEach((item, i) => {
-                        const temp = data[i].radius - (RADIUS_OFFSET * (Math.random() < 0.5 ? -1 : 1));
-                        item.radius = (temp < 0 || temp > scaleRadius.range()[1]) ? data[i].radius : temp;
+                    simulateData.forEach((item, index) => {
+                        item.i = item.i + 1 === simulateData.length ? 0 : item.i + 1;
+                        item.radius = data[item.i].r;
 
                     })
 
@@ -114,6 +117,8 @@
 
                 simulation.restart()
                 simulation.alphaTarget(.3);
+
+
                 console.log('Simulation running')
             }, 3000)
 
@@ -137,8 +142,17 @@
             }
 
 
+        },
+        updated: function () {
+
+            console.log("I am updated")
         }
     }
+
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
 
 </script>
 
@@ -147,7 +161,6 @@
 <!-- ////// -->
 
 <style lang="scss">
-
 
 
 </style>

@@ -199,7 +199,5 @@ setInterval(function()
                 return color(d.speed / maxSpeed);
             });
     }
-    simulation.restart()
-    simulation.alphaTarget(.3);
 
 }, 1000);

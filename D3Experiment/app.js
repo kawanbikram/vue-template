@@ -1,5 +1,5 @@
-const width = document.querySelector('.container').clientWidth;
-const height = document.querySelector('.container').clientHeight;
+const width = 400;//document.querySelector('.container').clientWidth;
+const height = 400;//document.querySelector('.container').clientHeight;
 const sizeDivisor = 100, nodePadding = 2.5;
 const svg = d3.select(".container")
     .append("svg")
@@ -14,7 +14,7 @@ const simulation = d3.forceSimulation()
     .force("forceX", d3.forceX().strength(.1).x(width))
     .force("forceY", d3.forceY().strength(.1).y(height))
     .force("center", d3.forceCenter().x(width * .5).y(height * .5))
-    .force("charge", d3.forceManyBody().strength(-200))
+    .force("charge", d3.forceManyBody().strength(-100))
 
 let firstSimulate = true;
 d3.csv("data.csv", (error, rawData) => {
@@ -41,6 +41,7 @@ d3.csv("data.csv", (error, rawData) => {
                 .nodes(simulateData)
                 .force("collide", d3.forceCollide()
                     .strength(.2)
+                    .radius(d => d.radius + nodePadding)
                     .iterations(1))
                 .on("tick", d => {
 
@@ -73,6 +74,7 @@ d3.csv("data.csv", (error, rawData) => {
             })
 
             simulation
+                .radius(d => d.radius + nodePadding)
                 .on("tick", (d, i) => {
                     // bounded box calculation from https://bl.ocks.org/mbostock/1129492
                     node
