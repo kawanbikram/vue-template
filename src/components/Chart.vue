@@ -31,6 +31,7 @@
                 .attr("width", width)
                 .attr("height", height);
             const color = d3.scaleOrdinal(["#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854", "#ffd92f", "#e5c494", "#b3b3b3"]);
+            const colorScale = d3.scaleLinear().domain(d3.extent(rawData, d => d.gdp)).range(['lightgrey', 'grey'])
             const DELAY = 100;
             const radiusDimension = [5, 100]
             const RADIUS_OFFSET = 5;
@@ -74,17 +75,15 @@
                     simulation
                         .nodes(simulateData)
                         .on("tick", d => {
-
                             // bounded box calculation from https://bl.ocks.org/mbostock/1129492
                             node
-                                .attr("cx", (d) => d.x)
-                                //.attr("cx", (d) => Math.max(d.radius, Math.min(width - d.radius, d.x)))
-                                .attr("cy", d => d.y)
-                                // .attr("cy", d => Math.max(d.radius, Math.min(height - d.radius, d.y)))
+                            //.attr("cx", (d) => d.x)
+                                .attr("cx", (d) => Math.max(d.radius, Math.min(width - d.radius, d.x)))
+                                //.attr("cy", d => d.y)
+                                .attr("cy", d => Math.max(d.radius, Math.min(height - d.radius, d.y)))
                                 .transition()
                                 .duration(DELAY)
                                 .attr('r', (d) => {
-
                                     simulation.restart()
                                     simulation.alphaTarget(.3);
                                     return d.radius
@@ -98,7 +97,7 @@
                         .data(simulateData)
                         .enter()
                         .append("circle")
-                        .attr("fill", d => color(d.radius))
+                        .attr("fill", d => colorScale(d.radius))
                         .call(d3.drag()
                             .on("start", dragstarted)
                             .on("drag", dragged)
@@ -138,13 +137,7 @@
 
                 }
 
-                // simulation.restart()
-                //  simulation.alphaTarget(.3);
-
-
-                //  simulation.restart()
                 simulation.alpha(0.3).restart();
-
                 console.log('Simulation running')
             }, 3000)
 
