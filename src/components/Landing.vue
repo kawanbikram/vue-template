@@ -8,7 +8,7 @@
         <div class="container">
             <div class="chartContainer top">
 
-                <Chart v-for="chart in charts" v-if="chart.positionTop" :className="chart.className"/>
+                <Chart v-for="chart in charts" v-if="chart.positionTop" :props="chart"/>
             </div>
 
             <div class="middleContainer">
@@ -22,7 +22,7 @@
             </div>
             <div class="chartContainer bottom">
 
-                <Chart v-for="chart in charts" v-if="!chart.positionTop" :className="chart.className"/>
+                <Chart v-for="chart in charts" v-if="!chart.positionTop" :props="chart"/>
             </div>
 
         </div>
@@ -42,7 +42,7 @@
     import Chart from './Chart.vue';
     import Category from './Category.vue'
     import DashLine from './DashLine.vue'
-
+    const charts = require('../chartConfiguration')
     export default {
         name: 'landing',
         components: {
@@ -53,16 +53,7 @@
         data: function () {
 
             return {
-                charts: [
-                    {className: 'chart1', positionTop: true},
-                    {className: 'chart2', positionTop: true},
-                    {className: 'chart3', positionTop: true},
-                    {className: 'chart4', positionTop: true},
-                    {className: 'chart5', positionTop: false},
-                    {className: 'chart6', positionTop: false},
-                    {className: 'chart7', positionTop: false},
-                    {className: 'chart8', positionTop: false},
-                ]
+                charts
             }
 
         }
@@ -88,7 +79,7 @@
 
         .container {
             width: 90%;
-            height: 70%;
+            height: 80%;
             -webkit-transform: rotate(-45deg);
             transform: rotate(-21deg);
             text-align: center;
