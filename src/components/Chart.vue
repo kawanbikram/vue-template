@@ -65,6 +65,11 @@
                             // bounded box calculation from https://bl.ocks.org/mbostock/1129492
                             nodeGroup
                                 .attr('transform', d => `translate(${Math.max(d.radius, Math.min(width - d.radius, d.x))}, ${Math.max(d.radius, Math.min(height - d.radius, d.y))})`)
+                                .classed('cursor', function () {
+                                        return d3.select(this).select('circle').attr('r') > that.props.clickAbleRadius;
+                                    }
+                                )
+
                             nodeGroup.select('circle')
                                 .transition()
                                 .duration(this.props.delay)
@@ -114,6 +119,11 @@
 
                             nodeGroup
                                 .attr('transform', d => `translate(${Math.max(d.radius, Math.min(width - d.radius, d.x))}, ${Math.max(d.radius, Math.min(height - d.radius, d.y))})`)
+                                .classed('cursor', function () {
+                                        return d3.select(this).select('circle').attr('r') > that.props.clickAbleRadius;
+                                    }
+                                )
+
                             nodeGroup.select('circle')
                                 .transition()
                                 .ease(d3.easePolyInOut)
@@ -177,6 +187,10 @@
     .notvisible {
         display: none;
 
+    }
+
+    .cursor {
+        cursor: pointer;
     }
 
     .foreignText {
