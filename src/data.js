@@ -1,4 +1,4 @@
-const sampleQues = ['where can my son learn Aikido', 'can i have my guide don in a rental ?', 'how do i find an ot that can help ?', 'what is the minimnm age']
+const sampleQues = ['where can my son learn Aikido where can my son learn Aikido', 'can i have my guide don in a rental ?', 'how do i find an ot that can help ?', 'what is the minimnm age']
 const _ = require('lodash')
 
 module.exports = [
