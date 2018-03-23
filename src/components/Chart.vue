@@ -15,6 +15,7 @@
 
 <script>
     import * as d3 from 'd3';
+
     export default {
         name: 'chart',
         props: ['props'],
@@ -35,7 +36,7 @@
                 .force("forceY", d3.forceY().strength(.1).y(height))
                 .force("center", d3.forceCenter().x(width * .5).y(height * .5))
                 .force("charge", d3.forceManyBody().strength(-150))
-                .force("collide", d3.forceCollide().radius(d=> d.radius + 0.5).iterations(2))
+                .force("collide", d3.forceCollide().radius(d => d.radius + 0.5).iterations(2))
 
             let firstSimulate = true;
             const scaleRadius = d3.scaleLinear()
@@ -72,12 +73,16 @@
                                 .duration(DELAY)
                                 .attr('r', function (d) {
                                     const parent = d3.select(this.parentNode);
-                                    parent.select('text').text(function (e) {
-                                        simulation.restart()
-                                        simulation.alphaTarget(that.props.alpha);
-                                        return e.country.length
+                                    parent.select('text')
+                                        .text(function (e) {
+                                            // simulation.restart()
+                                            //simulation.alphaTarget(that.props.alpha);
+                                            return e.country
 
-                                    })
+                                        })
+
+                                        .attr("dy", ".35em")
+
 
                                     return d.radius
                                 })
@@ -102,6 +107,7 @@
                     nodeGroup.append('text')
                         .text(d => d.country)
                         .attr('data-text', d => d.country)
+                        .classed('notvisible', d => d.radius < 90)
 
                 } else {
 
@@ -122,16 +128,44 @@
                                 .ease(d3.easePolyInOut)
                                 .duration(DELAY)
                                 .attr('r', function (d) {
+                                    // const parent = d3.select(this.parentNode);
+                                    // parent.select('text')
+                                    //     .text(function (e) {
+                                    //        // simulation.restart()
+                                    //         //simulation.alphaTarget(that.props.alpha);
+                                    //         return e.country
+                                    //
+                                    //     })
+                                    // .attr("font-size", function (d) {
+                                    //     return Math.min(2 * d.radius, (2 * d.radius) / this.getComputedTextLength() * 24) + "px";
+                                    // })
+                                    // .transition()
+                                    // .ease(d3.easePolyInOut)
+                                    // .duration(DELAY)
+                                    // .style("font-size", function (d) {
+                                    //     return Math.min(2 * d.radius, (2 * d.radius) / this.getComputedTextLength() * 24) + "px";
+                                    // })
+                                    // .attr("dy", ".35em")
+                                    // .attr("dx", d=>`-${d.radius}`)
+
                                     return d.radius
                                 })
                                 .attr("fill", d => colorScale(d.radius))
+
+                            setTimeout(()=>{
+                                nodeGroup.select('text')
+                                    .classed('notvisible', d => d.radius < 90)
+                            },DELAY)
+
 
 
                         });
 
                 }
 
-                simulation.alpha(this.props.alpha).restart();
+
+                simulation.alpha(this.props.alpha);
+                //  simulation.stop()
                 console.log('Simulation running')
             }, 3000)
 
@@ -176,6 +210,10 @@
 <!-- ////// -->
 
 <style lang="scss">
+    .notvisible {
+        display: none;
+
+    }
 
 
 </style>
