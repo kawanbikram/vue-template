@@ -28,16 +28,14 @@
             const colorScale = d3.scaleLinear()
                 .domain(d3.extent(this.props.rawData, d => d.gdp))
                 .range(this.props.color)
-            const DELAY = 150;
+            const DELAY = 100;
             const radiusDimension = [5, 100]
             const simulation = d3.forceSimulation()
                 .force("forceX", d3.forceX().strength(.1).x(width))
                 .force("forceY", d3.forceY().strength(.1).y(height))
                 .force("center", d3.forceCenter().x(width * .5).y(height * .5))
                 .force("charge", d3.forceManyBody().strength(-150))
-                .force("collide", d3.forceCollide().radius(function (d) {
-                    return d.radius + 0.5;
-                }).iterations(2))
+                .force("collide", d3.forceCollide().radius(d=> d.radius + 0.5).iterations(2))
 
             let firstSimulate = true;
             const scaleRadius = d3.scaleLinear()
@@ -54,78 +52,88 @@
 
 
             // sort the nodes so that the bigger ones are at the back
-            let node;
+            let nodeGroup;
             let simulateData = data.slice();
+            const that = this;
             setInterval(() => {
-                    if (firstSimulate) {
-                        firstSimulate = false;
-                        simulation
-                            .nodes(simulateData)
-                            .on("tick", d => {
-                                // bounded box calculation from https://bl.ocks.org/mbostock/1129492
-                                node
-                                //.attr("cx", (d) => d.x)
-                                    .attr("cx", (d) => Math.max(d.radius, Math.min(width - d.radius, d.x)))
-                                    //.attr("cy", d => d.y)
-                                    .attr("cy", d => Math.max(d.radius, Math.min(height - d.radius, d.y)))
-                                    .transition()
-                                    .duration(DELAY)
-                                    .attr('r', (d) => {
+                if (firstSimulate) {
+                    firstSimulate = false;
+                    simulation
+                        .nodes(simulateData)
+                        .on("tick", (...d) => {
+
+                            // bounded box calculation from https://bl.ocks.org/mbostock/1129492
+                            nodeGroup
+                                .attr('transform', function (d) {
+                                    return `translate(${Math.max(d.radius, Math.min(width - d.radius, d.x))}, ${Math.max(d.radius, Math.min(height - d.radius, d.y))})`;
+                                })
+                            nodeGroup.select('circle')
+                                .transition()
+                                .duration(DELAY)
+                                .attr('r', function (d) {
+                                    const parent = d3.select(this.parentNode);
+                                    parent.select('text').text(function (e) {
                                         simulation.restart()
-                                        simulation.alphaTarget(this.props.alpha);
-                                        return d.radius
+                                        simulation.alphaTarget(that.props.alpha);
+                                        return e.country.length
+
                                     })
-                            });
+
+                                    return d.radius
+                                })
+
+                        });
 
 
-                        node = svg.append("g")
-                            .attr("class", "node")
-                            .selectAll("circle")
-                            .data(simulateData)
-                            .enter()
-                            .append("circle")
-                            .attr("fill", d => colorScale(d.radius))
-                            .call(d3.drag()
-                                .on("start", dragstarted)
-                                .on("drag", dragged)
-                                .on("end", dragended));
+                    nodeGroup = svg.selectAll("g")
+                        .data(simulateData)
+                        .enter()
+                        .append('g')
+                        .attr('data-attr', d => d.country)
 
 
-                    }
+                    nodeGroup.append("circle")
+                        .attr("fill", d => colorScale(d.radius))
+                        .call(d3.drag()
+                            .on("start", dragstarted)
+                            .on("drag", dragged)
+                            .on("end", dragended))
+                        .attr('data-circle', d => d.country)
+                    nodeGroup.append('text')
+                        .text(d => d.country)
+                        .attr('data-text', d => d.country)
 
-                    else {
+                } else {
 
-                        simulateData.forEach(item => item.radius = updateRadius(item, data))
+                    simulateData.forEach(item => item.radius = updateRadius(item, data))
 
-                        simulation
-                            .nodes(simulateData)
-                            .on("tick", (d, i) => {
-                                // bounded box calculation from https://bl.ocks.org/mbostock/1129492
-                                node
-                                // .attr("cx", (d) => d.x)
-                                    .attr("cx", (d) => Math.max(d.radius, Math.min(width - d.radius, d.x)))
-                                    // .attr("cy", d => d.y)
-                                    .attr("cy", d => Math.max(d.radius, Math.min(height - d.radius, d.y)))
-                                    .transition()
-                                    .ease(d3.easePolyInOut)
-                                    .duration(DELAY)
-                                    .attr('r', (d) => {
+                    simulation
+                        .nodes(simulateData)
+                        .on("tick", (d, i) => {
+                            // bounded box calculation from https://bl.ocks.org/mbostock/1129492
 
-                                        // simulation.stop()
-                                       //  simulation.alpha(1).restart();
+                            nodeGroup
+                                .attr('transform', function (d) {
 
-                                        return d.radius
-                                    })
-                                    .attr("fill", d => colorScale(d.radius))
-                            });
+                                    return `translate(${Math.max(d.radius, Math.min(width - d.radius, d.x))}, ${Math.max(d.radius, Math.min(height - d.radius, d.y))})`;
+                                })
+                            const circle = nodeGroup.select('circle')
+                                .transition()
+                                .ease(d3.easePolyInOut)
+                                .duration(DELAY)
+                                .attr('r', function (d) {
+                                    return d.radius
+                                })
+                                .attr("fill", d => colorScale(d.radius))
 
-                    }
 
-                    simulation.alpha(this.props.alpha).restart();
-                    console.log('Simulation running')
-                },
-                5000
-            )
+                        });
+
+                }
+
+                simulation.alpha(this.props.alpha).restart();
+                console.log('Simulation running')
+            }, 3000)
 
             //});
 
