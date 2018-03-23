@@ -29,21 +29,19 @@
             const colorScale = d3.scaleLinear()
                 .domain(d3.extent(this.props.rawData, d => d.score))
                 .range(this.props.color)
-            const DELAY = 100;
-            const TEXT_DELAY = 300;
-            const radiusDimension = [5, 100];
-            const clickAbleRadius = 0.8 * radiusDimension[1];
+
             const simulation = d3.forceSimulation()
                 .force("forceX", d3.forceX().strength(.1).x(width))
                 .force("forceY", d3.forceY().strength(.1).y(height))
                 .force("center", d3.forceCenter().x(width * .5).y(height * .5))
-                .force("charge", d3.forceManyBody().strength(-150))
+                .force("charge", d3.forceManyBody().strength(this.props.forceSeparation))
                 .force("collide", d3.forceCollide().radius(d => d.radius + 0.5).iterations(2))
 
             let firstSimulate = true;
             const scaleRadius = d3.scaleLinear()
                 .domain(d3.extent(this.props.rawData, d => d.score))
-                .range(radiusDimension)
+                .range(this.props.radiusDimension)
+
             const data = this.props.rawData.map((d, i) => ({
                 ...d,
                 score: parseFloat(d.score),
@@ -66,14 +64,11 @@
 
                             // bounded box calculation from https://bl.ocks.org/mbostock/1129492
                             nodeGroup
-                                .attr('transform', function (d) {
-                                    return `translate(${Math.max(d.radius, Math.min(width - d.radius, d.x))}, ${Math.max(d.radius, Math.min(height - d.radius, d.y))})`;
-                                })
+                                .attr('transform', d => `translate(${Math.max(d.radius, Math.min(width - d.radius, d.x))}, ${Math.max(d.radius, Math.min(height - d.radius, d.y))})`)
                             nodeGroup.select('circle')
                                 .transition()
-                                .duration(DELAY)
+                                .duration(this.props.delay)
                                 .attr('r', d => d.radius)
-
                         });
 
 
@@ -84,8 +79,7 @@
                         .attr('data-attr', d => d.score)
                         .on('click', function (d) {
                             const currentRadius = d3.select(this).select('circle').attr('r')
-                            if (currentRadius > clickAbleRadius) window.open(d.url, '_blank');
-
+                            if (currentRadius > that.props.clickAbleRadius) window.open(d.url, '_blank');
                         })
 
 
@@ -99,12 +93,12 @@
 
 
                     nodeGroup.append("foreignObject")
-                        .attr("width", 2 * radiusDimension[1])
-                        .attr("height", 2 * radiusDimension[1])
-                        .attr('x', -radiusDimension[1])
-                        .attr('y', -radiusDimension[1])
+                        .attr("width", 2 * this.props.radiusDimension[1])
+                        .attr("height", 2 * this.props.radiusDimension[1])
+                        .attr('x', -this.props.radiusDimension[1])
+                        .attr('y', -this.props.radiusDimension[1])
                         .attr('class', 'foreignText')
-                        .classed('notvisible', d => d.radius < 0.9 * radiusDimension[1])
+                        .classed('notvisible', d => d.radius < this.props.visibleText)
                         .append("xhtml:body")
                         .html(d => `<div class='inlineText'>${d.label}</div>`)
 
@@ -119,23 +113,20 @@
                             // bounded box calculation from https://bl.ocks.org/mbostock/1129492
 
                             nodeGroup
-                                .attr('transform', function (d) {
-
-                                    return `translate(${Math.max(d.radius, Math.min(width - d.radius, d.x))}, ${Math.max(d.radius, Math.min(height - d.radius, d.y))})`;
-                                })
+                                .attr('transform', d => `translate(${Math.max(d.radius, Math.min(width - d.radius, d.x))}, ${Math.max(d.radius, Math.min(height - d.radius, d.y))})`)
                             nodeGroup.select('circle')
                                 .transition()
                                 .ease(d3.easePolyInOut)
-                                .duration(DELAY)
+                                .duration(this.props.delay)
                                 .attr('r', d => d.radius)
                                 .attr("fill", d => colorScale(d.radius))
 
                             setTimeout(() => {
                                 nodeGroup.select('foreignObject')
-                                    .classed('notvisible', d => d.radius < 0.9 * radiusDimension[1])
-                            }, TEXT_DELAY)
+                                    .classed('notvisible', d => d.radius < this.props.visibleText)
+                            }, this.props.textDelay)
 
-                            // simulation.stop()
+                            //simulation.stop()
 
                         });
 
@@ -145,7 +136,7 @@
                 simulation.alpha(this.props.alpha);
                 //  simulation.stop()
                 console.log('Simulation running')
-            }, 3000)
+            }, this.props.simulationInterval)
 
 
             const dragstarted = d => {
