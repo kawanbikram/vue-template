@@ -30,6 +30,7 @@
                 .domain(d3.extent(this.props.rawData, d => d.gdp))
                 .range(this.props.color)
             const DELAY = 100;
+            const TEXT_DELAY = 300;
             const radiusDimension = [5, 100]
             const simulation = d3.forceSimulation()
                 .force("forceX", d3.forceX().strength(.1).x(width))
@@ -43,7 +44,7 @@
                 .domain(d3.extent(this.props.rawData, d => d.gdp))
                 .range(radiusDimension)
             const data = this.props.rawData.map((d, i) => ({
-                country: d.country,
+                label: d.label,
                 gdp: parseFloat(d.gdp),
                 radius: scaleRadius(parseFloat(d.gdp)),
                 continent: d.continent,
@@ -71,21 +72,7 @@
                             nodeGroup.select('circle')
                                 .transition()
                                 .duration(DELAY)
-                                .attr('r', function (d) {
-                                    const parent = d3.select(this.parentNode);
-                                    parent.select('text')
-                                        .text(function (e) {
-                                            // simulation.restart()
-                                            //simulation.alphaTarget(that.props.alpha);
-                                            return e.country
-
-                                        })
-
-                                        .attr("dy", ".35em")
-
-
-                                    return d.radius
-                                })
+                                .attr('r', d => d.radius)
 
                         });
 
@@ -94,7 +81,7 @@
                         .data(simulateData)
                         .enter()
                         .append('g')
-                        .attr('data-attr', d => d.country)
+                        .attr('data-attr', d => d.continent)
 
 
                     nodeGroup.append("circle")
@@ -103,11 +90,23 @@
                             .on("start", dragstarted)
                             .on("drag", dragged)
                             .on("end", dragended))
-                        .attr('data-circle', d => d.country)
-                    nodeGroup.append('text')
-                        .text(d => d.country)
-                        .attr('data-text', d => d.country)
-                        .classed('notvisible', d => d.radius < 90)
+                        .attr('data-circle', d => d.continent)
+                    // nodeGroup.append('text')
+                    //     .text(d => d.country)
+                    //     .attr('data-text', d => d.country)
+                    //     .classed('notvisible', d => d.radius < 90)
+
+                    nodeGroup.append("foreignObject")
+                        .attr("width", 2 * radiusDimension[1])
+                        .attr("height", 2 * radiusDimension[1])
+                        .attr('x', -radiusDimension[1])
+                        .attr('y', -radiusDimension[1])
+                        .attr('class', 'foreignText')
+                        .classed('notvisible', d => d.radius < 0.9 * radiusDimension[1])
+                        .append("xhtml:body")
+                        .style("font", "14px 'Helvetica Neue'")
+                        .html(d => `<div class='inlineText'>${d.label}</div>`)
+
 
                 } else {
 
@@ -127,37 +126,20 @@
                                 .transition()
                                 .ease(d3.easePolyInOut)
                                 .duration(DELAY)
-                                .attr('r', function (d) {
-                                    // const parent = d3.select(this.parentNode);
-                                    // parent.select('text')
-                                    //     .text(function (e) {
-                                    //        // simulation.restart()
-                                    //         //simulation.alphaTarget(that.props.alpha);
-                                    //         return e.country
-                                    //
-                                    //     })
-                                    // .attr("font-size", function (d) {
-                                    //     return Math.min(2 * d.radius, (2 * d.radius) / this.getComputedTextLength() * 24) + "px";
-                                    // })
-                                    // .transition()
-                                    // .ease(d3.easePolyInOut)
-                                    // .duration(DELAY)
-                                    // .style("font-size", function (d) {
-                                    //     return Math.min(2 * d.radius, (2 * d.radius) / this.getComputedTextLength() * 24) + "px";
-                                    // })
-                                    // .attr("dy", ".35em")
-                                    // .attr("dx", d=>`-${d.radius}`)
-
-                                    return d.radius
-                                })
+                                .attr('r', d => d.radius)
                                 .attr("fill", d => colorScale(d.radius))
 
-                            setTimeout(()=>{
-                                nodeGroup.select('text')
-                                    .classed('notvisible', d => d.radius < 90)
-                            },DELAY)
+                            // setTimeout(()=>{
+                            //     nodeGroup.select('text')
+                            //         .classed('notvisible', d => d.radius < 90)
+                            // },DELAY)
 
+                            setTimeout(() => {
+                                nodeGroup.select('foreignObject')
+                                    .classed('notvisible', d => d.radius < 0.9 * radiusDimension[1])
+                            }, TEXT_DELAY)
 
+                            // simulation.stop()
 
                         });
 
@@ -213,6 +195,24 @@
     .notvisible {
         display: none;
 
+    }
+
+    .foreignText {
+        body {
+            margin: 0;
+            display: flex;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px !important;
+        }
+
+    }
+
+    .inlineText {
+
+        padding: 10px;
     }
 
 
