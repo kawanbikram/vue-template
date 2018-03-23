@@ -31,7 +31,8 @@
                 .range(this.props.color)
             const DELAY = 100;
             const TEXT_DELAY = 300;
-            const radiusDimension = [5, 100]
+            const radiusDimension = [5, 100];
+            const clickAbleRadius = 0.8 * radiusDimension[1];
             const simulation = d3.forceSimulation()
                 .force("forceX", d3.forceX().strength(.1).x(width))
                 .force("forceY", d3.forceY().strength(.1).y(height))
@@ -44,7 +45,7 @@
                 .domain(d3.extent(this.props.rawData, d => d.score))
                 .range(radiusDimension)
             const data = this.props.rawData.map((d, i) => ({
-                label: d.label,
+                ...d,
                 score: parseFloat(d.score),
                 radius: scaleRadius(parseFloat(d.score)),
                 r: scaleRadius(parseFloat(d.score)),
@@ -81,6 +82,11 @@
                         .enter()
                         .append('g')
                         .attr('data-attr', d => d.score)
+                        .on('click', function (d) {
+                            const currentRadius = d3.select(this).select('circle').attr('r')
+                            if (currentRadius > clickAbleRadius) window.open(d.url, '_blank');
+
+                        })
 
 
                     nodeGroup.append("circle")
@@ -100,7 +106,6 @@
                         .attr('class', 'foreignText')
                         .classed('notvisible', d => d.radius < 0.9 * radiusDimension[1])
                         .append("xhtml:body")
-                        .style("font", "14px 'Helvetica Neue'")
                         .html(d => `<div class='inlineText'>${d.label}</div>`)
 
 
