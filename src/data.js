@@ -2,21 +2,21 @@ const sampleQues = ['where can my son learn Aikido', 'can i have my guide don in
 const _ = require('lodash')
 
 module.exports = [
-    {"label": _.sample(sampleQues), "gdp": "0.1", "continent": "Asia"},
-    {"label": _.sample(sampleQues), "gdp": "0.5", "continent": "Asia"},
-    {"label": _.sample(sampleQues), "gdp": "3", "continent": "Asia"},
-    {"label": _.sample(sampleQues), "gdp": "1", "continent": "Asia"},
-    {"label": _.sample(sampleQues), "gdp": "1.7", "continent": "Asia"},
-    {"label": _.sample(sampleQues), "gdp": "8.8", "continent": "Asia"},
-    {"label": _.sample(sampleQues), "gdp": "2.7", "continent": "Asia"},
-    {"label": _.sample(sampleQues), "gdp": "3.8", "continent": "Asia"},
-    {"label": _.sample(sampleQues), "gdp": "4.8", "continent": "Asia"},
-    {"label": _.sample(sampleQues), "gdp": "30.8", "continent": "Asia"},
-    {"label": _.sample(sampleQues), "gdp": "5.8", "continent": "Asia"},
-    {"label": _.sample(sampleQues), "gdp": "8", "continent": "Asia"},
-    {"label": _.sample(sampleQues), "gdp": "2", "continent": "Asia"},
-    {"label": _.sample(sampleQues), "gdp": "1.8", "continent": "Asia"},
-    {"label": _.sample(sampleQues), "gdp": "80", "continent": "Asia"},
+    {"label": _.sample(sampleQues), "score": "0.1",},
+    {"label": _.sample(sampleQues), "score": "0.5",},
+    {"label": _.sample(sampleQues), "score": "3",},
+    {"label": _.sample(sampleQues), "score": "1"},
+    {"label": _.sample(sampleQues), "score": "1.7",},
+    {"label": _.sample(sampleQues), "score": "8.8",},
+    {"label": _.sample(sampleQues), "score": "2.7",},
+    {"label": _.sample(sampleQues), "score": "3.8",},
+    {"label": _.sample(sampleQues), "score": "4.8",},
+    {"label": _.sample(sampleQues), "score": "30.8"},
+    {"label": _.sample(sampleQues), "score": "5.8"},
+    {"label": _.sample(sampleQues), "score": "8",},
+    {"label": _.sample(sampleQues), "score": "2"},
+    {"label": _.sample(sampleQues), "score": "1.8"},
+    {"label": _.sample(sampleQues), "score": "80"}
 
 
 ]

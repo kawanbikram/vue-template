@@ -27,7 +27,7 @@
                 .attr("width", width)
                 .attr("height", height);
             const colorScale = d3.scaleLinear()
-                .domain(d3.extent(this.props.rawData, d => d.gdp))
+                .domain(d3.extent(this.props.rawData, d => d.score))
                 .range(this.props.color)
             const DELAY = 100;
             const TEXT_DELAY = 300;
@@ -41,14 +41,13 @@
 
             let firstSimulate = true;
             const scaleRadius = d3.scaleLinear()
-                .domain(d3.extent(this.props.rawData, d => d.gdp))
+                .domain(d3.extent(this.props.rawData, d => d.score))
                 .range(radiusDimension)
             const data = this.props.rawData.map((d, i) => ({
                 label: d.label,
-                gdp: parseFloat(d.gdp),
-                radius: scaleRadius(parseFloat(d.gdp)),
-                continent: d.continent,
-                r: scaleRadius(parseFloat(d.gdp)),
+                score: parseFloat(d.score),
+                radius: scaleRadius(parseFloat(d.score)),
+                r: scaleRadius(parseFloat(d.score)),
                 i
             }))
 
@@ -81,7 +80,7 @@
                         .data(simulateData)
                         .enter()
                         .append('g')
-                        .attr('data-attr', d => d.continent)
+                        .attr('data-attr', d => d.score)
 
 
                     nodeGroup.append("circle")
@@ -90,11 +89,8 @@
                             .on("start", dragstarted)
                             .on("drag", dragged)
                             .on("end", dragended))
-                        .attr('data-circle', d => d.continent)
-                    // nodeGroup.append('text')
-                    //     .text(d => d.country)
-                    //     .attr('data-text', d => d.country)
-                    //     .classed('notvisible', d => d.radius < 90)
+                        .attr('data-circle', d => d.score)
+
 
                     nodeGroup.append("foreignObject")
                         .attr("width", 2 * radiusDimension[1])
@@ -122,17 +118,12 @@
 
                                     return `translate(${Math.max(d.radius, Math.min(width - d.radius, d.x))}, ${Math.max(d.radius, Math.min(height - d.radius, d.y))})`;
                                 })
-                            const circle = nodeGroup.select('circle')
+                            nodeGroup.select('circle')
                                 .transition()
                                 .ease(d3.easePolyInOut)
                                 .duration(DELAY)
                                 .attr('r', d => d.radius)
                                 .attr("fill", d => colorScale(d.radius))
-
-                            // setTimeout(()=>{
-                            //     nodeGroup.select('text')
-                            //         .classed('notvisible', d => d.radius < 90)
-                            // },DELAY)
 
                             setTimeout(() => {
                                 nodeGroup.select('foreignObject')
@@ -151,7 +142,6 @@
                 console.log('Simulation running')
             }, 3000)
 
-            //});
 
             const dragstarted = d => {
                 if (!d3.event.active) simulation.alphaTarget(this.props.alpha).restart();
@@ -171,10 +161,6 @@
             }
 
 
-        },
-        updated: function () {
-
-            console.log("I am updated")
         }
 
     }
